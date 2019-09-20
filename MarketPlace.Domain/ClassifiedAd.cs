@@ -5,7 +5,7 @@ namespace MarketPlace.Domain
     {
         public ClassifiedAdId Id { get; private set; }
         private UserId _ownerId;
-        private string _title;
+        private ClassifiedAdTitle _title;
         private string _text;
         private decimal _price;
 
@@ -15,7 +15,7 @@ namespace MarketPlace.Domain
             _ownerId = ownerId;
         }
 
-        public void SetTitle(string title) => _title = title;
+        public void SetTitle(ClassifiedAdTitle title) => _title = title;
 
         public void UpdateText(string text) => _text = text;
 
