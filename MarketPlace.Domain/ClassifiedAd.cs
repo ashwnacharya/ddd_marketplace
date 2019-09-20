@@ -1,7 +1,9 @@
 ﻿using System;
+using MarketPlace.Framework;
+
 namespace MarketPlace.Domain
 {
-    public class ClassifiedAd
+    public class ClassifiedAd: Entity
     {
         public ClassifiedAdId Id { get; private set; }
         public UserId OwnerId { get; private set; }
@@ -24,9 +26,16 @@ namespace MarketPlace.Domain
             Id = id;
             OwnerId = ownerId;
             State = ClassifiedAdState.Inactive;
+            EnsureValidState();
+
+            Raise(new Events.ClassifiedAdCreated
+            {
+                Id = id, 
+                OwnerId = ownerId 
+            });
         }
 
-        protected void EnsureValidState()
+        protected override void EnsureValidState()
         {
             var valid = true;
 
@@ -75,6 +84,12 @@ namespace MarketPlace.Domain
         {
             Title = title;
             EnsureValidState();
+
+            Raise(new Events.ClassifiedAdTitleChanged
+            {
+                Id = Id,
+                Title = title
+            });
         }
 
 
@@ -82,6 +97,12 @@ namespace MarketPlace.Domain
         {
             Text = text;
             EnsureValidState();
+
+            Raise(new Events.ClassifiedAdTextUpdated
+            {
+                Id = Id,
+                Text = text
+            });
         }
 
 
@@ -89,12 +110,25 @@ namespace MarketPlace.Domain
         {
             Price = price;
             EnsureValidState();
+
+            Raise(new Events.ClassiedAdPriceUpdated
+            {
+                Id = Id,
+                Price = price.Amount,
+                CurrencyCode = Price.Currency.CurrencyCode
+            });
         }
+
 
         public void RequestToPublish()
         {
             State = ClassifiedAdState.PendingReview;
             EnsureValidState();
+
+            Raise(new Events.ClassifiedAdSentForReview
+            {
+                Id = Id
+            });
         }
     }
 }

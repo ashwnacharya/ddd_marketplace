@@ -7,6 +7,14 @@ namespace MarketPlace.Domain
     {
         private readonly Guid _value;
 
-        public ClassifiedAdId(Guid value) => _value = value;
+        public ClassifiedAdId(Guid value)
+        {
+            if (value == default)
+                throw new ArgumentNullException("Classified ad id cannot be empty", nameof(value));
+
+            _value = value;
+        }
+
+        public static implicit operator Guid(ClassifiedAdId self) => self._value;
     }
 }

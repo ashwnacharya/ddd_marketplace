@@ -4,20 +4,13 @@ using System.Linq;
 
 namespace MarketPlace.Framework
 {
-    public abstract class Entity<TId> where TId : IEquatable<TId>
+    public abstract class Entity
     {
         private readonly List<object> _events;
 
         protected Entity() => _events = new List<object>();
 
-        protected void Apply(object @event)
-        {
-            When(@event);
-            EnsureValidState();
-            _events.Add(@event);
-        }
-
-        protected abstract void When(object @event);
+        protected void Raise(object @event) => _events.Add(@event);
 
         public IEnumerable<object> GetChanges() => _events.AsEnumerable();
 

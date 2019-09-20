@@ -13,5 +13,7 @@ namespace MarketPlace.Domain
         public static ClassifiedAdText FromString(string title) =>
             new ClassifiedAdText(title);
 
+        public static implicit operator string(ClassifiedAdText self) => self._value;
+
     }
 }
