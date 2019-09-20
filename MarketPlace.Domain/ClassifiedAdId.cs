@@ -1,17 +1,12 @@
 using System;
+using MarketPlace.Framework;
 
 namespace MarketPlace.Domain
 {
-    public class ClassifiedAdId
+    public class ClassifiedAdId: Value<ClassifiedAdId>
     {
         private readonly Guid _value;
 
-        public ClassifiedAdId(Guid value)
-        {
-            if (value == default)
-                throw new ArgumentException("Classified Ad Id cannot be empty", nameof(value));
-
-            _value = value;
-        }
+        public ClassifiedAdId(Guid value) => _value = value;
     }
 }
