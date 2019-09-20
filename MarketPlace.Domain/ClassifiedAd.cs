@@ -21,19 +21,12 @@ namespace MarketPlace.Domain
             MarkedAsSold
         }
 
-        public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
-        {
-            Id = id;
-            OwnerId = ownerId;
-            State = ClassifiedAdState.Inactive;
-            EnsureValidState();
-
-            Raise(new Events.ClassifiedAdCreated
+        public ClassifiedAd(ClassifiedAdId id, UserId ownerId) =>
+            Apply(new Events.ClassifiedAdCreated
             {
-                Id = id, 
-                OwnerId = ownerId 
+                Id = id,
+                OwnerId = ownerId
             });
-        }
 
         protected override void EnsureValidState()
         {
@@ -80,55 +73,65 @@ namespace MarketPlace.Domain
         }
 
 
-        public void SetTitle(ClassifiedAdTitle title)
-        {
-            Title = title;
-            EnsureValidState();
-
-            Raise(new Events.ClassifiedAdTitleChanged
+        public void SetTitle(ClassifiedAdTitle title) =>
+            Apply(new Events.ClassifiedAdTitleChanged
             {
                 Id = Id,
                 Title = title
             });
-        }
 
 
-        public void UpdateText(ClassifiedAdText text)
-        {
-            Text = text;
-            EnsureValidState();
 
-            Raise(new Events.ClassifiedAdTextUpdated
+        public void UpdateText(ClassifiedAdText text) =>
+            Apply(new Events.ClassifiedAdTextUpdated
             {
                 Id = Id,
                 Text = text
             });
-        }
 
 
-        public void UpdatePrice(Price price)
-        {
-            Price = price;
-            EnsureValidState();
-
-            Raise(new Events.ClassiedAdPriceUpdated
+        public void UpdatePrice(Price price) =>
+            Apply(new Events.ClassiedAdPriceUpdated
             {
                 Id = Id,
                 Price = price.Amount,
-                CurrencyCode = Price.Currency.CurrencyCode
+                CurrencyCode = price.Currency.CurrencyCode
             });
-        }
 
 
-        public void RequestToPublish()
-        {
-            State = ClassifiedAdState.PendingReview;
-            EnsureValidState();
-
-            Raise(new Events.ClassifiedAdSentForReview
+        public void RequestToPublish() =>
+            Apply(new Events.ClassifiedAdSentForReview
             {
                 Id = Id
             });
+
+
+        protected override void When(object @event)
+        {
+            switch(@event)
+            {
+                case Events.ClassifiedAdCreated e:
+                    Id = new ClassifiedAdId(e.Id);
+                    OwnerId = new UserId(e.OwnerId);
+                    State = ClassifiedAdState.Inactive;
+                    break;
+
+                case Events.ClassifiedAdTitleChanged e:
+                    Title = new ClassifiedAdTitle(e.Title);
+                    break;
+
+                case Events.ClassifiedAdTextUpdated e:
+                    Text = new ClassifiedAdText(e.Text);
+                    break;
+
+                case Events.ClassiedAdPriceUpdated e:
+                    Price = new Price(e.Price, e.CurrencyCode);
+                    break;
+
+                case Events.ClassifiedAdSentForReview e:
+                    State = ClassifiedAdState.PendingReview;
+                    break;
+            }
         }
     }
 }
