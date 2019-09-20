@@ -7,4 +7,9 @@
   <ItemGroup>
     <Compile Remove="Class1.cs" />
   </ItemGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\MarketPlace.Framework\MarketPlace.Framework.csproj" />
+  </ItemGroup>
+
 </Project>
