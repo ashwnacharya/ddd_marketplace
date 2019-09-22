@@ -31,9 +31,22 @@ namespace MarketPlace.Domain
                     };
                     Order = e.Order;
                     break;
+
+                case Events.ClassifiedAdPictureResized e:
+                    Size = new PictureSize { Height = e.Height, Width = e.Width };
+                    break;
             }
         }
 
         public Picture(Action<object> applier) : base(applier) {}
+
+        public void Resize(PictureSize newSize)
+            => Apply(new Events.ClassifiedAdPictureResized
+            {
+                PictureId = Id.Value,
+                ClassifiedAdId = ParentId.Value,
+                Height = newSize.Width,
+                Width = newSize.Width
+            });
     }
 }
