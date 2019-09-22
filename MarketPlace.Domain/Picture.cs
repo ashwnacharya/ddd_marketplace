@@ -12,6 +12,7 @@ namespace MarketPlace.Domain
 
     public class Picture: Entity<PictureId>
     {
+        internal ClassifiedAdId ParentId { get; private set; }
         internal PictureSize Size {get; set; }
         internal Uri Location { get; set; }
         internal int Order {get; set; }
