@@ -135,6 +135,9 @@ namespace MarketPlace.Domain
         private Picture FindPicture(PictureId id)
             => Pictures.FirstOrDefault(x => x.Id == id);
 
+        private Picture FirstPicture
+            => Pictures.OrderBy(x => x.Order).FirstOrDefault();
+
         public void ResizePicture(PictureId pictureId, PictureSize newSize)
         {
             var picture = FindPicture(pictureId);
