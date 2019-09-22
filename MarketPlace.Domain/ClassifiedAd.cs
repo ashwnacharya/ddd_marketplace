@@ -131,5 +131,19 @@ namespace MarketPlace.Domain
                     break;
             }
         }
+
+        private Picture FindPicture(PictureId id)
+            => Pictures.FirstOrDefault(x => x.Id == id);
+
+        public void ResizePicture(PictureId pictureId, PictureSize newSize)
+        {
+            var picture = FindPicture(pictureId);
+            if (picture == null)
+                throw new InvalidOperationException(
+                    "Cannot resize a picture that I don't have"
+                );
+
+            picture.Resize(newSize);
+        }
     }
 }
