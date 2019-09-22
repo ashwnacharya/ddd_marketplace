@@ -3,7 +3,7 @@ using MarketPlace.Framework;
 
 namespace MarketPlace.Domain
 {
-    public class ClassifiedAd: Entity
+    public class ClassifiedAd: AggregateRoot<ClassifiedAdId>
     {
         public ClassifiedAdId Id { get; private set; }
         public UserId OwnerId { get; private set; }
