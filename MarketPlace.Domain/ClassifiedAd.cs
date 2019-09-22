@@ -24,12 +24,15 @@ namespace MarketPlace.Domain
             MarkedAsSold
         }
 
-        public ClassifiedAd(ClassifiedAdId id, UserId ownerId) =>
+        public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
+        {
+            Pictures = new List<Picture>();
             Apply(new Events.ClassifiedAdCreated
             {
                 Id = id,
                 OwnerId = ownerId
             });
+        }
 
         protected override void EnsureValidState()
         {
@@ -40,12 +43,14 @@ namespace MarketPlace.Domain
                     ClassifiedAdState.PendingReview => 
                         Title != null
                         && Text != null
-                        && Price?.Amount > 0,
+                        && Price?.Amount > 0
+                        && FirstPicture.HasCorrectSize(),
                     ClassifiedAdState.Active => 
                         Title != null
                         && Text != null
                         && Price?.Amount > 0
-                        && ApprovedBy != null,
+                        && ApprovedBy != null
+                        && FirstPicture.HasCorrectSize(),
                     _ => true
                 });
 
@@ -87,7 +92,8 @@ namespace MarketPlace.Domain
                 Id = Id
             });
 
-        public void AddPicture(Uri pictureUri, PictureSize size) =>
+        public void AddPicture(Uri pictureUri, PictureSize size)
+        {
             Apply(new Events.PictureAddedToAClassifiedAd
             {
                 PictureId = new Guid(),
@@ -95,8 +101,14 @@ namespace MarketPlace.Domain
                 Url = pictureUri.ToString(),
                 Height = size.Height,
                 Width = size.Width,
-                Order = Pictures.Max(x => x.Order)
+                Order = NewPictureOrder()
             });
+
+            int NewPictureOrder()
+                => Pictures.Any()
+                    ? Pictures.Max(x => x.Order) + 1
+                    : 0;
+        }
 
         protected override void When(object @event)
         {
