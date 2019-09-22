@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using MarketPlace.Framework;
 
 namespace MarketPlace.Domain
@@ -12,6 +14,7 @@ namespace MarketPlace.Domain
         public Price Price {get; private set; }
         public UserId ApprovedBy {get; private set; }
         public ClassifiedAdState State {get; private set; }
+        public List<Picture> Pictures { get; private set; }
 
         public enum ClassifiedAdState
         {
@@ -84,6 +87,16 @@ namespace MarketPlace.Domain
                 Id = Id
             });
 
+        public void AddPicture(Uri pictureUri, PictureSize size) =>
+            Apply(new Events.PictureAddedToAClassifiedAd
+            {
+                PictureId = new Guid(),
+                ClassifiedAdId = Id,
+                Url = pictureUri.ToString(),
+                Height = size.Height,
+                Width = size.Width,
+                Order = Pictures.Max(x => x.Order)
+            });
 
         protected override void When(object @event)
         {
@@ -109,6 +122,12 @@ namespace MarketPlace.Domain
 
                 case Events.ClassifiedAdSentForReview e:
                     State = ClassifiedAdState.PendingReview;
+                    break;
+
+                case Events.PictureAddedToAClassifiedAd e:
+                    var picture = new Picture(Apply);
+                    ApplyToEntity(picture, e);
+                    Pictures.Add(picture);
                     break;
             }
         }
