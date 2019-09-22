@@ -30,42 +30,21 @@ namespace MarketPlace.Domain
 
         protected override void EnsureValidState()
         {
-            var valid = true;
-
-            if (Id == null)
-                valid = valid && false;
-
-            if (OwnerId == null)
-                valid = valid && false;
-
-            if (State == ClassifiedAdState.PendingReview)
-            {
-                if (Title == null)
-                    valid = valid && false;
-
-
-                if (Text == null)
-                    valid = valid && false;
-
-                if (Price == null || Price.Amount <= 0)
-                    valid = valid && false;
-            }
-            
-            if (State == ClassifiedAdState.Active)
-            {
-                if (Title == null)
-                    valid = valid && false;
-
-
-                if (Text == null)
-                    valid = valid && false;
-
-                if (Price == null || Price.Amount <= 0)
-                    valid = valid && false;
-
-                if (ApprovedBy == null)
-                    valid = valid && false;
-            }
+            var valid =
+                Id != null &&
+                OwnerId != null &&
+                (State switch{
+                    ClassifiedAdState.PendingReview => 
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0,
+                    ClassifiedAdState.Active => 
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0
+                        && ApprovedBy != null,
+                    _ => true
+                });
 
             if (!valid)
                 throw new InvalidEntityStateException(
